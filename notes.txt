@@ -1,0 +1,3 @@
+Contar o número de fazes
+Difícil gerar o caso pessimista
+Demonstrar sqrt(N+M) verificar
