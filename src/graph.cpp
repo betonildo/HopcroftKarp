@@ -6,7 +6,6 @@ Graph::Graph() {
 
 void Graph::setSize(uint size) {
     m_size = size + 1;
-    m_v_graph.resize(m_size);
 }
 
 void Graph::set(uint u, uint v, uint w) {
@@ -14,16 +13,15 @@ void Graph::set(uint u, uint v, uint w) {
 }
 
 void Graph::set(uint u, uint v) {
-    m_v_graph[u] = v;
     m_graph[u][v] = 1;
 }
 
 void Graph::setSource(uint s) {
-
+    source = s;
 }
 
 void Graph::setSink(uint t) {
-
+    sink = t;
 }
 
 uint Graph::maximumMatching() {
@@ -48,23 +46,12 @@ uint Graph::maximumMatching() {
 //                        matching = matching + 1
 //        return matching
 
-    Pair_U.resize(m_size);
-    Pair_V.resize(m_size);
+    V1.resize(m_size);
+    V2.resize(m_size);
     dist.resize(m_size);
 
-    std::memset(Pair_U.data(), 0, m_size);
-    std::memset(Pair_V.data(), 0, m_size);
-
-    for (auto uvw : m_graph) {
-
-        uint u = uvw.first;
-        Pair_U[u] = 0;
-
-        for (auto vw : uvw.second) {
-            uint v = vw.first;
-            Pair_V[v] = 0;
-        }
-    }
+    std::memset(V1.data(), 0, m_size);
+    std::memset(V2.data(), 0, m_size);
 
     uint matching = 0;
 
@@ -74,7 +61,7 @@ uint Graph::maximumMatching() {
 
             uint u = uvw.first;
 
-            if (Pair_U[u] == 0) {
+            if (V1[u] == 0) {
                 if (depthFirstSearch(u)) {
                     matching += 1;
                 }
@@ -103,14 +90,12 @@ bool Graph::breadthFirstSearch() {
 //                        Enqueue(Q,Pair_V[v])
 //        return Dist[NIL] != ∞
 
-
-
     std::queue<uint> Q;
 
     for (auto uvw : m_graph) {
 
         uint u = uvw.first;
-        if (Pair_U[u] == 0) {
+        if (V1[u] == 0) {
             dist[u] = 0;
             Q.push(u);
         }
@@ -131,9 +116,9 @@ bool Graph::breadthFirstSearch() {
             for (auto vw : m_graph[u]) {
                 uint v = vw.first;
 
-                if (dist[Pair_V[v]] == INF) {
-                    dist[Pair_V[v]] = dist[u] + 1;
-                    Q.push(Pair_V[v]);
+                if (dist[V2[v]] == INF) {
+                    dist[V2[v]] = dist[u] + 1;
+                    Q.push(V2[v]);
                 }
             }
         }
@@ -161,10 +146,10 @@ function DFS (u)
         for (auto vw : m_graph[u]) {
             uint v = vw.first;
 
-            if (dist[Pair_V[v]] == dist[u] + 1) {
-                if (depthFirstSearch(Pair_V[v])) {
-                    Pair_V[v] = u;
-                    Pair_U[u] = v;
+            if (dist[V2[v]] == dist[u] + 1) {
+                if (depthFirstSearch(V2[v])) {
+                    V2[v] = u;
+                    V1[u] = v;
                     return true;
                 }
             }
@@ -175,85 +160,4 @@ function DFS (u)
     }
 
     return true;
-}
-
-bool Graph::search_paths(std::vector<uint>& M, std::vector<uint>& P) {
-    std::vector<bool> m;
-    m.resize(m_size);
-
-    std::vector<uint> d;
-    d.resize(m_size);
-    std::vector<uint> U1 = getFreeVertices();
-    for (uint u : U1)
-        d[u] = 0;
-
-    std::vector<uint> U2;
-    bool found;
-
-    do {
-
-        // verify termination
-        bool shouldTerminate = true;
-        for (bool mi : m) {
-            if (!mi) shouldTerminate = false;
-        }
-
-        if (shouldTerminate) break;
-
-
-        U2.clear();
-
-        for (uint u : U1) {
-            m[u] = false;
-
-            for (auto vw : m_graph[u]) {
-
-                uint v = vw.first;
-                if (M[v] == 0) {
-
-                    if (NOT m[v]) {
-                        d[v] = d[u] + 1;
-                        U2.push_back(v);
-                    }
-                }
-            }
-        }
-
-        found = false;
-
-        U1.clear();
-
-        for (uint u : U2) {
-            m[u] = true;
-
-            if (isFree(u)) {
-                found = true;
-            }
-            else {
-                uint v = m[u];
-                if (NOT m[v]) {
-                    d[v] = d[u] + 1;
-                    U1.push_back(v);
-                }
-            }
-        }
-
-    }while(NOT found);
-
-    return found;
-}
-
-std::vector<uint> Graph::getFreeVertices() {
-    std::vector<uint> freeVertices;
-
-    for (uint i = 0; i < m_v_graph.size(); i++) {
-        if (m_v_graph[i] == 0)
-            freeVertices.push_back(i);
-    }
-
-    return freeVertices;
-}
-
-bool Graph::isFree(uint u) {
-    return m_v_graph[u] == 0;
 }

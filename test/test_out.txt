@@ -1,0 +1,14 @@
+c The cardinality of a maximum matching is 5.
+c Bi-partite graph
+
+p edge 15 10
+e 1 6
+e 2 7
+e 3 8
+e 4 9
+e 5 10
+e 1 11
+e 2 12
+e 3 13
+e 4 14
+e 5 15

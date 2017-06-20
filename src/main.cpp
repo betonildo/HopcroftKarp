@@ -2,7 +2,7 @@
 #include "graph.hpp"
 #include "read_dimacs.hpp"
 
-int main(int argc, char** argv) {
+int main() {
 
     Graph g;
 
